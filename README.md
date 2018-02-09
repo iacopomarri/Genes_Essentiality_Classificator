@@ -1,8 +1,6 @@
 # Genes_Essentiality_Classificator
 Questa applicazione usa l'algoritmo Perceptron applicandolo al problema della classificazione dei geni, usando i datasets di 
 S.Cerevisiae e S.Mikatae .
-In the main.py file che test() function is called, with some parameters useful to test the perceptron by changing them.
-the parameters are: 
 Nel file Main.py è chiamata la funzione test(), che sta nel file Test.py, e gli sono passati alcuni parametr utili a testare il perceptron:
 
 -Estimator
