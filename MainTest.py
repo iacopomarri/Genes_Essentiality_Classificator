@@ -3,7 +3,8 @@
 #research, in the written relation.
 
 from Test import test
-from Functions import Count
+from sklearn.metrics import confusion_matrix, accuracy_score
+from Functions import Count, SplitX_y
 from DataLoader import loadCerevisiae, loadMikatae
 import csv
 import copy
@@ -16,11 +17,6 @@ from sklearn.model_selection import cross_val_score
 #variablesw
 Cerevisiae=[]
 Mikatae=[]
-X_train=[]
-y_train=[]
-X_test=[]
-y_test=[]
-y_pred=[]
 
 Cerevisiae=loadCerevisiae()
 Mikatae=loadMikatae()
@@ -28,7 +24,6 @@ Mikatae=loadMikatae()
 #Mikatae e Cerevisiae sono ora ottimizzati per essere usati come dataset. Cerevisiae contiene una colonna in più di mikatae
 #che rappresenta l'essenzialità.
 
-cv=KFold(n_splits=5, random_state=5, shuffle=True)
 estimator=Perceptron(max_iter=10)
 
 #test è una funzione che iterando sulla dimensione del training set (preso da Cerevisiae) e sulla quantià di elementi essenziali e non, presenti
@@ -36,17 +31,39 @@ estimator=Perceptron(max_iter=10)
 # ritornato l'algoritmo fittato con il tranining set in questione.
 # potrebbe non trovare un training set con tale precisione.
 #trovato il miglior estimatore si usa per predirre l'essenzialità del dataset Mikatae
-essentialityNRange=[50, 449, 100]
-sizeRange=[450, 2500, 1000]
+
 
 #valori di ritorno estimator, max, maxsize, maxessN, maxAccuracy, bestMatrix
-estimator, prec, trainSize, essElementsInTrain, accuracy, confusionMatrix =test(estimator, Cerevisiae, 50, 449, 10,
-                                                                                                        450, 2500, 10)
+estimator, prec, trainSize, essElementsInTrain, accuracy, confusionMatrix, X_train_best, y_train_best, X_test_best, y_test_best, y_pred_best, plt=\
+                                                                                                test(estimator, Cerevisiae, 50, 449, 10,
+                                                                                                                           450, 2500, 10)
 if estimator!=0:
+    print("L'algoritmo è stato allenato su un train set di dimensione ", end="")
+    print(trainSize, end="")
+    print(" e con un numero di elementi essenziali pari a ", end="")
+    print(essElementsInTrain)
+    print("Precisione = ", end="")
+    print(prec)
+    print("Accuratezza = ", end="")
+    print(accuracy)
+    print("Matrice confusionale = ")
+    print(confusionMatrix)
+    print("L'estimatore è stato usato poi per predirre l'essenzialità del dataset Mikatae, ottenendo su 4500 elementi, i seguenti risultati:")
+
     pred=estimator.predict(Mikatae)
-    print(pred)
+    #print(pred)
     ones, zeros = Count(pred)
-    print(ones, zeros)
+    print("Elementi essenziali: ", end="")
+    print(ones)
+    print("Elementi non essenziali: ", end="")
+    print(zeros)
+
+    y_pred = estimator.fit(X_train_best, y_train_best).predict(X_test_best)
+    accuracy = 100 * accuracy_score(y_test_best, y_pred)
+    matrix = confusion_matrix(y_test_best, y_pred)
+    print(accuracy)
+    print(matrix)
 else:
     print("Non è stato trovato un estimatore soddisfacente")
 
+plt.show()

@@ -1,6 +1,8 @@
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from Functions import setSplit
 import copy
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc
 
 
 #iterando sulla dimensione del training set (preso da Cerevisiae) e sulla quantià di elementi essenziali e non, presenti
@@ -13,7 +15,6 @@ def test(estimator, Cerevisiae, essNstart, essNend, essNpass, sizeRangeStart, si
     maxessN=0
     maxAccuracy=0
     bestMatrix=0
-    bestClassRep=0
     bestEstimator=0
 
     for essN in range(essNstart, essNend, essNpass):
@@ -40,12 +41,36 @@ def test(estimator, Cerevisiae, essNstart, essNend, essNpass, sizeRangeStart, si
                     bestMatrix = matrix
                     bestEstimator=copy.deepcopy(estimator)
 
+                    X_train_best = copy.deepcopy(X_train)
+                    y_train_best=copy.deepcopy(y_train)
+                    X_test_best=copy.deepcopy(X_test)
+                    y_test_best=copy.deepcopy(y_test)
+                    y_pred_best=copy.deepcopy(y_pred)
+
+
                 print(" ")
                 print(" ")
+                print("Numero di elementi essenziali nel training set: ", end="")
                 print(essN)
+                print("Dimensione del training set: ",end="")
                 print(size)
+                print("Accuratezza: ",end="")
                 print(accuracy)
+                print("Matrice di confusione: ")
                 print(matrix)
                 print(classification_report(y_test, y_pred))
-        print(size)
-    return bestEstimator, max, maxsize, maxessN, maxAccuracy, bestMatrix
+        print(essN)
+
+    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test_best, y_pred_best)
+    roc_auc = auc(false_positive_rate, true_positive_rate)
+    print(roc_auc)
+    plt.title('Receiver Operating charateristics')
+    plt.plot(false_positive_rate, true_positive_rate, 'b')
+    label = ('AUC=%0.2f' % roc_auc)
+    plt.legend(loc='lower right')
+    plt.plot([0, 1], [0, 1], 'r--')
+    plt.xlim([-0.1, 1.2])
+    plt.ylim([-0.1, 1.2])
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False positive Rate')
+    return bestEstimator, max, maxsize, maxessN, maxAccuracy, bestMatrix, X_train_best, y_train_best, X_test_best, y_test_best, y_pred_best, plt

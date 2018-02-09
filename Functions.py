@@ -13,6 +13,12 @@ from sklearn.metrics import *
 import matplotlib.pyplot as plt
 from sklearn.model_selection import learning_curve
 
+def SplitX_y(dati):
+    X=copy.deepcopy(dati)
+    y=[]
+    for i in range(len(X)):
+        y.append(X[i].pop())
+    return X, y
 
 #IN TUTTO IL DATASET CI SONO 769 GENI ESSENIALI
 def setSplit(Train_dim, essPositiveNum, X):
