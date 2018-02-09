@@ -22,3 +22,5 @@ del test.
 i risultati vengono mostrati volta per volta quando vengono trovati (solo i migliori) e alla fine viene mostrato il migliore fra tutti.
 Dato questo miglior fitting, viene eseguito il test finale sul set Mikatae e vengono stampati i numeri di geni esseniali e di geni non
 essenziali.
+
+Molte funzioni usate sono prese dalle librerie di ScikitLearn.
